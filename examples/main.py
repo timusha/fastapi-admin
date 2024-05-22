@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 
 import redis.asyncio as redis
 import uvicorn
@@ -46,6 +47,7 @@ async def lifespan(app: FastAPI):
         ],
         redis=r,
     )
+    yield
 
 
 def create_app():
@@ -60,9 +62,7 @@ def create_app():
     async def index():
         return RedirectResponse(url="/admin")
 
-    admin_app.add_exception_handler(
-        HTTP_500_INTERNAL_SERVER_ERROR, server_error_exception
-    )
+    admin_app.add_exception_handler(HTTP_500_INTERNAL_SERVER_ERROR, server_error_exception)
     admin_app.add_exception_handler(HTTP_404_NOT_FOUND, not_found_error_exception)
     admin_app.add_exception_handler(HTTP_403_FORBIDDEN, forbidden_error_exception)
     admin_app.add_exception_handler(HTTP_401_UNAUTHORIZED, unauthorized_error_exception)
