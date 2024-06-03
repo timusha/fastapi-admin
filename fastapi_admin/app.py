@@ -1,3 +1,4 @@
+import os
 from typing import Dict, List, Optional, Type
 
 from aioredis import Redis
@@ -5,9 +6,9 @@ from fastapi import FastAPI
 from pydantic import HttpUrl
 from starlette.middleware.base import BaseHTTPMiddleware
 from tortoise import Model
+from dotenv import load_dotenv
 
 from fastapi_admin import i18n
-
 from . import middlewares, template
 from .providers import Provider
 from .resources import Dropdown
@@ -15,6 +16,8 @@ from .resources import Model as ModelResource
 from .resources import Resource
 from .routes import router
 
+# Load environment variables from .env file
+load_dotenv()
 
 class FastAPIAdmin(FastAPI):
     logo_url: str
@@ -77,3 +80,9 @@ app = FastAPIAdmin(
 )
 app.add_middleware(BaseHTTPMiddleware, dispatch=middlewares.language_processor)
 app.include_router(router)
+
+# Environment variables
+DATABASE_URL = os.getenv("DATABASE_URL")
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+# Additional configurations can be added here as needed
